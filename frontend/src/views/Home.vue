@@ -7,6 +7,7 @@
           <th>Model</th>
           <th>Year</th>
           <th>Volume</th>
+          <th>Remove</th>
       </tr>
       </thead>
       <tbody>
@@ -15,6 +16,7 @@
           <td>{{ car.model }}</td>
           <td>{{ car.year }}</td>
           <td>{{ car.volume }}</td>
+          <td><button @click="removeCar(car)">Remove</button></td>
         </tr>
       </tbody>
     </table>
@@ -70,15 +72,36 @@ export default {
         alert(JSON.stringify(await response.json(), null, 2))
       } else {
       // clear createform on frontend after POST
-      this.currentCar.vendor = ''
-      this.currentCar.model = ''
-      this.currentCar.year = ''
-      this.currentCar.volume = ''
+      this.currentCar = {}
       }
 
       // get cars with new added car from backend after backend-validation
       await this.fetchCars()
+    },
+
+    async removeCar(car) {
+      const {id} = car
+      const response = await fetch(`http://127.0.0.1:8000/api/cars/${id}/`, {
+        method: "DELETE",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.status !== 204) {
+        alert(JSON.stringify(await response.json(), null, 2))
+        }
+
+      await this.fetchCars()
+
     }
+
+
+
+
+
+
   }
 }
 </script>
