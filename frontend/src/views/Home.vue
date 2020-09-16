@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div><h1>Cars count: {{ this.cars.length }}</h1></div>
     <table>
       <thead>
         <tr>
@@ -50,13 +51,13 @@ export default {
 
   methods: {
 
-    // create function GET cars from backend
+    // method GET cars from backend
     async fetchCars() {
       const response = await fetch('http://127.0.0.1:8000/api/cars/')
       this.cars = await response.json()
     },
 
-    // create function POST new car
+    // method POST new car
     async createCar() {
       const response = await fetch('http://127.0.0.1:8000/api/cars/' , {
         method: "POST",
@@ -79,6 +80,7 @@ export default {
       await this.fetchCars()
     },
 
+    // method remove car
     async removeCar(car) {
       const {id} = car
       const response = await fetch(`http://127.0.0.1:8000/api/cars/${id}/`, {
@@ -89,10 +91,12 @@ export default {
         }
       })
 
+      // check status after DELETE
       if (response.status !== 204) {
         alert(JSON.stringify(await response.json(), null, 2))
-        }
+      }
 
+      // get cars without removed car from backend
       await this.fetchCars()
 
     }

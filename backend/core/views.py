@@ -5,5 +5,5 @@ from .serializers import CarSerializer
 
 
 class CarViewSet(ModelViewSet):
-    serializer_class = CarSerializer               # как сереиализуем
-    queryset = Car.objects.all()                   # что сереализуем
+    serializer_class = CarSerializer               # how we will serialize
+    queryset = Car.objects.all()                   # what we will serialize - data
