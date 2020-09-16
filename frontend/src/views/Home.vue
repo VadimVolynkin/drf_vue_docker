@@ -18,6 +18,13 @@
         </tr>
       </tbody>
     </table>
+
+    <input placeholder="vendor" v-model="currentCar.vendor">
+    <input placeholder="model" v-model="currentCar.model">
+    <input placeholder="year" v-model.number="currentCar.year">
+    <input placeholder="volume" v-model.number="currentCar.volume">
+    <button @click="createCar()">Create</button>
+
   </div>
 </template>
 
@@ -28,13 +35,50 @@ export default {
   data() {
     return {
       cars:[],
+      currentCar:{},
     }
   },
+
+
   async created() {
-    const response = await fetch('http://127.0.0.1:8000/api/cars/')
-    this.cars = await response.json()
+
+    // get cars from backend in first time
+    this.fetchCars()
   },
-  components: {
+
+  methods: {
+
+    // create function GET cars from backend
+    async fetchCars() {
+      const response = await fetch('http://127.0.0.1:8000/api/cars/')
+      this.cars = await response.json()
+    },
+
+    // create function POST new car
+    async createCar() {
+      const response = await fetch('http://127.0.0.1:8000/api/cars/' , {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.currentCar)
+      })
+
+      // check status after POST and show alert with response data
+      if (response.status !== 201) {
+        alert(JSON.stringify(await response.json(), null, 2))
+      } else {
+      // clear createform on frontend after POST
+      this.currentCar.vendor = ''
+      this.currentCar.model = ''
+      this.currentCar.year = ''
+      this.currentCar.volume = ''
+      }
+
+      // get cars with new added car from backend after backend-validation
+      await this.fetchCars()
+    }
   }
 }
 </script>
