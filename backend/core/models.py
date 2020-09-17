@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Car(models.Model):
     vendor = models.CharField(max_length=128)
     model = models.CharField(max_length=128)
@@ -7,7 +8,7 @@ class Car(models.Model):
     volume = models.PositiveSmallIntegerField()
 
 
-# === Random Data Generator ========================================
+# === Random Data Generator for shell ==============================
 # from random import *
 # from string import *
 

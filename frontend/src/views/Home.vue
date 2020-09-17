@@ -1,6 +1,26 @@
 <template>
   <div>
-    <div><h1>Cars count: {{ this.cars.length }}</h1></div>
+          <v-col cols="8">
+            <v-container class="max-width">
+              <v-pagination
+                v-model="page"
+                class="my-4"
+                :length="parseInt(carsCount/cars.length)"
+                total-visible=12
+                @input="fetchCars(baseUrl + page)"
+                @next="fetchCars(nextPage)"
+                @prev="fetchCars(previousPage)"
+              ></v-pagination>
+            </v-container>
+          </v-col>
+
+      <div><h1>Cars count: {{ this.carsCount }}</h1></div>
+      <input placeholder="vendor" v-model="currentCar.vendor">
+      <input placeholder="model" v-model="currentCar.model">
+      <input placeholder="year" v-model.number="currentCar.year">
+      <input placeholder="volume" v-model.number="currentCar.volume">
+      <button @click="createCar()">Create</button>
+
     <table>
       <thead>
         <tr>
@@ -21,13 +41,6 @@
         </tr>
       </tbody>
     </table>
-
-    <input placeholder="vendor" v-model="currentCar.vendor">
-    <input placeholder="model" v-model="currentCar.model">
-    <input placeholder="year" v-model.number="currentCar.year">
-    <input placeholder="volume" v-model.number="currentCar.volume">
-    <button @click="createCar()">Create</button>
-
   </div>
 </template>
 
@@ -39,6 +52,12 @@ export default {
     return {
       cars:[],
       currentCar:{},
+      carsCount: Number,
+      page: 1,
+      previousPage: null,
+      nextPage: null,
+      baseUrl: 'http://127.0.0.1:8000/api/cars/?page='
+      // url: this.createUrl()
     }
   },
 
@@ -49,12 +68,17 @@ export default {
     this.fetchCars()
   },
 
+
   methods: {
 
     // method GET cars from backend
-    async fetchCars() {
-      const response = await fetch('http://127.0.0.1:8000/api/cars/')
-      this.cars = await response.json()
+    async fetchCars(url = 'http://127.0.0.1:8000/api/cars/') {
+      const response = await fetch(url)
+      const { results, count, next, previous } = await response.json()
+      this.cars = results
+      this.carsCount = count
+      this.nextPage = next
+      this.previousPage = previous
     },
 
     // method POST new car
@@ -72,7 +96,7 @@ export default {
       if (response.status !== 201) {
         alert(JSON.stringify(await response.json(), null, 2))
       } else {
-      // clear createform on frontend after POST
+      // clear createform on frontend after successful POST
       this.currentCar = {}
       }
 
@@ -100,12 +124,11 @@ export default {
       await this.fetchCars()
 
     }
-
-
-
-
-
-
   }
 }
 </script>
+
+// TODO create update method
+// TODO create Item page with CRUD
+// TODO validate create and update backend
+// TODO validate create and update frontend
