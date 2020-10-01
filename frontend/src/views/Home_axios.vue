@@ -43,7 +43,11 @@
             <tbody>
                 <tr v-for="car in cars" :key="car.id">
                     <td>{{ car.vendor }}</td>
-                    <td>{{ car.model }}</td>
+                    <td>
+                        <a :href="car.id" @click="goTo(car.id)">{{
+                            car.model
+                        }}</a>
+                    </td>
                     <td>{{ car.year }}</td>
                     <td>{{ car.volume }}</td>
                     <td><button @click="removeCar(car)">Remove</button></td>
@@ -104,17 +108,6 @@ export default {
                 .catch((error) => alert(error));
         },
 
-        async removeCar(car) {
-            const { id } = car;
-            const url = `http://127.0.0.1:8000/api/cars/${id}/`;
-            await axios
-                .delete(url)
-                .then(() => {
-                    // get cars without removed car from backend
-                    this.fetchCars();
-                })
-                .catch((error) => alert(error));
-        },
         async updateCar(car) {
             const { id } = car;
             this.idUpdatingCar = id;
@@ -127,18 +120,21 @@ export default {
                 })
                 .catch((error) => alert(error));
         },
+
+        // confirm update changes and clear form
         async confirmUpdateCar(idUpdatingCar) {
             const url = `http://127.0.0.1:8000/api/cars/${idUpdatingCar}/`;
             await axios
                 .put(url, this.currentCar)
                 .then(() => {
-                    // clear updateform on frontend after successful PUT
-                    this.currentCar = {};
                     // get cars with updated car from backend after backend-validation
                     this.fetchCars();
-                    this.isUpdating = false;
                 })
                 .catch((error) => alert(error));
+            // switch updating status
+            this.isUpdating = false;
+            // clear updateform on frontend after successful PUT
+            this.currentCar = {};
         },
 
         // cancel update process and clear form
@@ -147,16 +143,33 @@ export default {
             this.isUpdating = false;
             this.currentCar = {};
         },
+
+        async removeCar(car) {
+            const { id } = car;
+            const url = `http://127.0.0.1:8000/api/cars/${id}/`;
+            await axios
+                .delete(url)
+                .then(() => {
+                    // get cars without removed car from backend
+                    this.fetchCars();
+                })
+                .catch((error) => alert(error));
+        },
+
+        // go to Car page
+        async goTo(id) {
+            this.$router.push({ name: "Car", params: { id: id } });
+        },
     },
 };
 </script>
 
 
 
-// TODO use axios
-// TODO get axios in created or mounted?
-// TODO create update method
-// TODO create Item page with CRUD
+// TODO where to include axios.get? in created or mounted?
+// TODO does need updateCar to reload or not?
 // TODO validate create and update backend
 // TODO validate create and update frontend
 // TODO add sort in table
+// TODO add filter in table
+// TODO add search in table
